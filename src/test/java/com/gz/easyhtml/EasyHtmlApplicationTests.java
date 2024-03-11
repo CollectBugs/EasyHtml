@@ -37,15 +37,9 @@ class EasyHtmlApplicationTests {
                         .color("#000000").build())
                 .build();
         //转成html标签
-        String htmlTable = HtmlTable.exportHtml(headers, data, config);
+        String htmlTable = HtmlTable.convertHtmlLabel(headers, data, config);
         //输出html文件
-        String fileName = "output.html";
-        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileName))) {
-            bufferedWriter.write(htmlTable);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        HtmlTable.exportHtml("test.html",htmlTable);
     }
 
 }

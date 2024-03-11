@@ -2,17 +2,34 @@ package com.gz.easyhtml.util;
 
 import com.gz.easyhtml.pojo.TableStyleConfig;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 public class HtmlTable {
     /**
      * 导出html文件
+     * @param fileName
+     * @param htmlTable
+     */
+    public static void exportHtml(String fileName,String htmlTable){
+        //输出html文件
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileName))) {
+            bufferedWriter.write(htmlTable);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 转成html标签
      * @param headers
      * @param data
      * @param tableStyleConfig
      * @return
      */
-    public static String exportHtml(List<String> headers, List<List<String>> data, TableStyleConfig tableStyleConfig) {
+    public static String convertHtmlLabel(List<String> headers, List<List<String>> data, TableStyleConfig tableStyleConfig) {
         StringBuilder html = new StringBuilder();
         html.append("<table style=\"text-align: ").append(tableStyleConfig.getTableStyle().getTextPosition())
                 .append("; margin: ").append(tableStyleConfig.getTableStyle().getMargin())
