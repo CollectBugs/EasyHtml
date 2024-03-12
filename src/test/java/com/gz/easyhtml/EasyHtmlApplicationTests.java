@@ -29,28 +29,11 @@ class EasyHtmlApplicationTests {
         }
 
         //表格样式配置
-        var config = TableStyleConfig.builder()
+       var config = TableStyleConfig.builder()
                 .titleStyle(TableStyleConfig.TitleStyle.builder()
-                        .borderLineWith(LineWidthEnum.WIDTH_1PX.getWidth())
-                        .borderLineStyle(LineStyleEnum.SOLID.getStyle())
-                        .borderColor(ColorEnum.BLACK.getCode())
                         .columnColspanNum(4)
-                        .textPosition(PositionEnum.CENTER)
-                        .build())
-                .columnStyle(TableStyleConfig.ColumnStyle.builder()
-                        .borderLineWith(LineWidthEnum.WIDTH_1PX.getWidth())
-                        .borderLineStyle(LineStyleEnum.SOLID.getStyle())
-                        .borderColor(ColorEnum.BLACK.getCode())
-                        .backGroundColor(ColorEnum.BLUE.getCode())
-                        .textColor(ColorEnum.WHITE.getCode())
-                        .build())
-                .rowStyle(TableStyleConfig.RowStyle.builder()
-                        .fontSize(FontSizeEnum.SMALL.getSize())
-                        .fontType(FontTypeEnum.ARIAL.getType())
-                        .borderLineWith(LineWidthEnum.WIDTH_1PX.getWidth())
-                        .borderLineStyle(LineStyleEnum.SOLID.getStyle())
-                        .borderColor(ColorEnum.BLACK.getCode()).build())
-                .build();
+                        .build()).build();
+
         //构建对象
         HtmlTable ht = new HtmlTable(config);
         //转成html标签

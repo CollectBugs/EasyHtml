@@ -27,7 +27,7 @@ public class TableStyleConfig {
      */
     @Data
     @SuperBuilder
-    public static class TitleStyle extends StyleBase {
+    public static class TitleStyle {
         //合并单元格
         private Integer columnColspanNum;
         //文本位置
