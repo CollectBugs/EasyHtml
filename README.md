@@ -9,8 +9,9 @@
 * 支持自定义文件名
 # 测试样例
 ```Java
+//默认样式
  @Test
-    void listToHtmlTableTest()  {
+    void testDefaultStyle()  {
         List<String> column = List.of("姓名", "性别", "年龄","城市");
         List<Person> data=new ArrayList<>();
         for(int i=0;i<50;i++){
@@ -21,30 +22,31 @@
             person.setGender("男");
             data.add(person);
         }
+        //构建对象
+        HtmlTable ht = new HtmlTable();
+        //转成html标签
+        String htmlTable = ht.convertHtmlLabel("人员信息表", column,data);
+        //输出html文件
+        ht.exportHtml("test.html", htmlTable);
 
-        //表格样式配置
+    }
+//自定义样式
+@Test
+void testCustomStyle()  {
+        List<String> column = List.of("姓名", "性别", "年龄","城市");
+        List<Person> data=new ArrayList<>();
+        for(int i=0;i<50;i++){
+            Person person=new Person();
+            person.setName("gz"+i);
+            person.setAge("25"+i);
+            person.setAddr("heze");
+            person.setGender("男");
+            data.add(person);
+        }
         var config = TableStyleConfig.builder()
                 .titleStyle(TableStyleConfig.TitleStyle.builder()
-                        .borderLineWith(LineWidthEnum.WIDTH_1PX.getWidth())
-                        .borderLineStyle(LineStyleEnum.SOLID.getStyle())
-                        .borderColor(ColorEnum.BLACK.getCode())
-                        .columnColspanNum(4)
-                        .textPosition(PositionEnum.CENTER)
-                        .build())
-                .columnStyle(TableStyleConfig.ColumnStyle.builder()
-                        .borderLineWith(LineWidthEnum.WIDTH_1PX.getWidth())
-                        .borderLineStyle(LineStyleEnum.SOLID.getStyle())
-                        .borderColor(ColorEnum.BLACK.getCode())
-                        .backGroundColor(ColorEnum.BLUE.getCode())
-                        .textColor(ColorEnum.WHITE.getCode())
-                        .build())
-                .rowStyle(TableStyleConfig.RowStyle.builder()
-                        .fontSize(FontSizeEnum.SMALL.getSize())
-                        .fontType(FontTypeEnum.ARIAL.getType())
-                        .borderLineWith(LineWidthEnum.WIDTH_1PX.getWidth())
-                        .borderLineStyle(LineStyleEnum.SOLID.getStyle())
-                        .borderColor(ColorEnum.BLACK.getCode()).build())
-                .build();
+                        .columnColspanNum(4)  //合并单元格
+                        .build()).build();
         //构建对象
         HtmlTable ht = new HtmlTable(config);
         //转成html标签
