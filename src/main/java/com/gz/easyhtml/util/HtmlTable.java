@@ -8,6 +8,13 @@ import java.io.IOException;
 import java.util.List;
 
 public class HtmlTable {
+
+    //配置类
+    private TableStyleConfig config;
+    public HtmlTable(TableStyleConfig config) {
+        this.config=config;
+    }
+
     /**
      * 导出html文件
      *
@@ -28,17 +35,16 @@ public class HtmlTable {
      *
      * @param headers
      * @param data
-     * @param tableStyleConfig
      * @return
      */
-    public String convertHtmlLabel(String titleName, List<String> headers, List<List<String>> data, TableStyleConfig tableStyleConfig) {
+    public String convertHtmlLabel(String titleName, List<String> headers, List<List<String>> data) {
         StringBuilder html = new StringBuilder();
         //默认表格样式前
         defaultTableStyleBefore(html);
         // 初始化表头
-        initHeaders(titleName, headers, html, tableStyleConfig);
+        initHeaders(titleName, headers, html);
         // 初始行
-        initBodyRows(data, html, tableStyleConfig);
+        initBodyRows(data, html);
         //默认表格样式后
         defaultTableStyleAfter(html);
         return html.toString();
@@ -48,8 +54,8 @@ public class HtmlTable {
         html.append("</table>");
     }
 
-    private void initBodyRows(List<List<String>> data, StringBuilder html, TableStyleConfig tableStyleConfig) {
-        TableStyleConfig.Style rowStyle = tableStyleConfig.getRowStyle();
+    private void initBodyRows(List<List<String>> data, StringBuilder html) {
+        TableStyleConfig.RowStyle rowStyle = config.getRowStyle();
 
         html.append("""
                 <tbody>
@@ -85,9 +91,9 @@ public class HtmlTable {
                 """);
     }
 
-    private void initHeaders(String titleName, List<String> columns, StringBuilder html, TableStyleConfig tableStyleConfig) {
-        TableStyleConfig.Style columnStyle = tableStyleConfig.getColumnStyle();
-        TableStyleConfig.Style titleStyle = tableStyleConfig.getTitleStyle();
+    private void initHeaders(String titleName, List<String> columns, StringBuilder html) {
+        TableStyleConfig.ColumnStyle columnStyle = config.getColumnStyle();
+        TableStyleConfig.TitleStyle titleStyle = config.getTitleStyle();
 
         initHeaderBefore(html);
 
@@ -112,16 +118,17 @@ public class HtmlTable {
                 """);
     }
 
-    private void doInitColumn(TableStyleConfig.Style columnStyle, List<String> columns, StringBuilder html) {
+    private void doInitColumn(TableStyleConfig.ColumnStyle columnStyle, List<String> columns, StringBuilder html) {
         html.append("""
-                <tr>
-                """);
+                <tr style="background-color: %s;">
+                """.formatted(columnStyle.getBackGroundColor()));
         columns.forEach(column -> html.append("""
-                <th style="border: %s %s %s;">%s</th>
+                <th style="border: %s %s %s; color: %s;">%s</th>
                 """.formatted(
                 columnStyle.getBorderLineWith(),
                 columnStyle.getBorderLineStyle(),
                 columnStyle.getBorderColor(),
+                columnStyle.getTextColor(),
                 column
         )));
         html.append("""
@@ -129,7 +136,7 @@ public class HtmlTable {
                 """);
     }
 
-    private void doInitTitle(TableStyleConfig.Style titleStyle, StringBuilder html, String titleName) {
+    private void doInitTitle(TableStyleConfig.TitleStyle titleStyle, StringBuilder html, String titleName) {
         html.append("""
                 <tr>
                     <th colspan="%d" style="text-align: %s;">%s</th>
