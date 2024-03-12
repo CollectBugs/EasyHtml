@@ -1,10 +1,14 @@
 package com.gz.easyhtml.util;
 
+import com.gz.easyhtml.pojo.Person;
 import com.gz.easyhtml.pojo.TableStyleConfig;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Field;
 import java.util.List;
 
 public class HtmlTable {
@@ -37,7 +41,7 @@ public class HtmlTable {
      * @param data
      * @return
      */
-    public String convertHtmlLabel(String titleName, List<String> headers, List<List<String>> data) {
+    public <T>String convertHtmlLabel(String titleName, List<String> headers, List<T> data) {
         StringBuilder html = new StringBuilder();
         //默认表格样式前
         defaultTableStyleBefore(html);
@@ -54,35 +58,43 @@ public class HtmlTable {
         html.append("</table>");
     }
 
-    private void initBodyRows(List<List<String>> data, StringBuilder html) {
+    private <T> void initBodyRows(List<T> data, StringBuilder html) {
         TableStyleConfig.RowStyle rowStyle = config.getRowStyle();
 
         html.append("""
-                <tbody>
-                    """);
-        for (List<String> row : data) {
+            <tbody>
+                """);
+        for (T row : data) {
             html.append("""
-                    <tr>
-                        """);
-            for (String cell : row) {
-                html.append("""
-                        <td style="border: %s %s %s;">%s</td>
-                        """.formatted(
-                        rowStyle.getBorderLineWith(),
-                        rowStyle.getBorderLineStyle(),
-                        rowStyle.getBorderColor(),
-                        cell
-                ));
+                <tr>
+                    """);
+            // 获取对象的所有属性
+            Field[] fields = row.getClass().getDeclaredFields();
+            for (Field field : fields) {
+                try {
+                    field.setAccessible(true);
+                    MethodHandle getter = MethodHandles.lookup().unreflectGetter(field);
+                    Object value = getter.invoke(row);
+                    html.append("<td style=\"border: %s %s %s; font-size: %s; font-family: %s;\">%s</td>"
+                            .formatted(rowStyle.getBorderLineWith(),
+                                    rowStyle.getBorderLineStyle(),
+                                    rowStyle.getBorderColor(),
+                                    rowStyle.getFontSize(),
+                                    rowStyle.getFontType(),
+                                    value.toString()));
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
             }
             html.append("""
-                    </tr>
-                    """);
+                </tr>
+                """);
         }
         html.append("""
-                </tbody>
-                """);
-
+            </tbody>
+            """);
     }
+
 
     //默认表格样式
     private void defaultTableStyleBefore(StringBuilder html) {

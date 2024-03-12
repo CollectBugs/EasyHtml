@@ -53,7 +53,9 @@ public class TableStyleConfig {
     @Data
     @SuperBuilder
     public static class RowStyle extends StyleBase {
-
-
+        //字体类型
+        private String fontType;
+        //字体大小
+        private String fontSize;
     }
 }

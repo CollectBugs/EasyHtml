@@ -1,15 +1,14 @@
 package com.gz.easyhtml;
 
-import com.gz.easyhtml.enums.ColorEnum;
-import com.gz.easyhtml.enums.LineStyleEnum;
-import com.gz.easyhtml.enums.LineWidthEnum;
-import com.gz.easyhtml.enums.PositionEnum;
+import com.gz.easyhtml.enums.*;
+import com.gz.easyhtml.pojo.Person;
 import com.gz.easyhtml.pojo.TableStyleConfig;
 import com.gz.easyhtml.util.HtmlTable;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest
@@ -18,53 +17,24 @@ class EasyHtmlApplicationTests {
 
     @Test
     void listToHtmlTableTest() {
-        List<String> headers = List.of("Name", "Age", "City");
-        List<List<String>> data = List.of(
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("gz", "25", "beijing"),
-                List.of("jelly", "30", "he ze")
-        );
+        List<String> column = List.of("姓名", "性别", "年龄","城市");
+        List<Person> data=new ArrayList<>();
+        for(int i=0;i<50;i++){
+            Person person=new Person();
+            person.setName("gz"+i);
+            person.setAge("25"+i);
+            person.setAddr("heze");
+            person.setGender("男");
+            data.add(person);
+        }
+
         //表格样式配置
         var config = TableStyleConfig.builder()
                 .titleStyle(TableStyleConfig.TitleStyle.builder()
                         .borderLineWith(LineWidthEnum.WIDTH_1PX.getWidth())
                         .borderLineStyle(LineStyleEnum.SOLID.getStyle())
                         .borderColor(ColorEnum.BLACK.getCode())
-                        .columnColspanNum(3)
+                        .columnColspanNum(4)
                         .textPosition(PositionEnum.CENTER)
                         .build())
                 .columnStyle(TableStyleConfig.ColumnStyle.builder()
@@ -75,6 +45,8 @@ class EasyHtmlApplicationTests {
                         .textColor(ColorEnum.WHITE.getCode())
                         .build())
                 .rowStyle(TableStyleConfig.RowStyle.builder()
+                        .fontSize(FontSizeEnum.SMALL.getSize())
+                        .fontType(FontTypeEnum.ARIAL.getType())
                         .borderLineWith(LineWidthEnum.WIDTH_1PX.getWidth())
                         .borderLineStyle(LineStyleEnum.SOLID.getStyle())
                         .borderColor(ColorEnum.BLACK.getCode()).build())
@@ -82,7 +54,7 @@ class EasyHtmlApplicationTests {
         //构建对象
         HtmlTable ht = new HtmlTable(config);
         //转成html标签
-        String htmlTable = ht.convertHtmlLabel("人员信息表", headers, data);
+        String htmlTable = ht.convertHtmlLabel("人员信息表", column,data);
         //输出html文件
         ht.exportHtml("test.html", htmlTable);
     }

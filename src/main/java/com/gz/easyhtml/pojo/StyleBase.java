@@ -13,5 +13,4 @@ public class StyleBase {
     private String borderLineWith;
     //边框线形状：solid
     private String borderLineStyle;
-
 }
