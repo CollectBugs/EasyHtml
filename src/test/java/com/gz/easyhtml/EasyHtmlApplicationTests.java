@@ -3,18 +3,14 @@ package com.gz.easyhtml;
 import com.gz.easyhtml.enums.ColorEnum;
 import com.gz.easyhtml.enums.LineStyleEnum;
 import com.gz.easyhtml.enums.LineWidthEnum;
+import com.gz.easyhtml.enums.PositionEnum;
 import com.gz.easyhtml.pojo.TableStyleConfig;
 import com.gz.easyhtml.util.HtmlTable;
-import io.github.birddevelper.salmos.HtmlReportMaker;
-import io.github.birddevelper.salmos.ObjectFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @SpringBootTest
 class EasyHtmlApplicationTests {
@@ -64,19 +60,26 @@ class EasyHtmlApplicationTests {
         );
         //表格样式配置
         var config = TableStyleConfig.builder()
-                .headBorderStyle(TableStyleConfig.Border.builder().
-                        lineWith(LineWidthEnum.WIDTH_1PX.getWidth()).
-                        lineStyle(LineStyleEnum.SOLID.getStyle())
-                        .color(ColorEnum.BLACK.getCode()).build())
-                .rowBorderStyle(TableStyleConfig.Border.builder().
-                        lineWith(LineWidthEnum.WIDTH_1PX.getWidth()).
-                        lineStyle(LineStyleEnum.SOLID.getStyle())
-                        .color(ColorEnum.BLACK.getCode()).build())
+                .titleStyle(TableStyleConfig.Style.builder().
+                        borderLineWith(LineWidthEnum.WIDTH_1PX.getWidth()).
+                        borderLineStyle(LineStyleEnum.SOLID.getStyle())
+                        .borderColor(ColorEnum.BLACK.getCode())
+                        .columnColspanNum(3)
+                        .textPosition(PositionEnum.CENTER).build())
+                .columnStyle(TableStyleConfig.Style.builder().
+                        borderLineWith(LineWidthEnum.WIDTH_1PX.getWidth()).
+                        borderLineStyle(LineStyleEnum.SOLID.getStyle())
+                        .borderColor(ColorEnum.BLACK.getCode()).build())
+                .rowStyle(TableStyleConfig.Style.builder().
+                        borderLineWith(LineWidthEnum.WIDTH_1PX.getWidth()).
+                        borderLineStyle(LineStyleEnum.SOLID.getStyle())
+                        .borderColor(ColorEnum.BLACK.getCode()).build())
                 .build();
         //转成html标签
-        String htmlTable = HtmlTable.convertHtmlLabel(headers, data, config);
+        HtmlTable ht=new HtmlTable();
+        String htmlTable = ht.convertHtmlLabel("人员信息表",headers, data, config);
         //输出html文件
-        HtmlTable.exportHtml("test.html",htmlTable);
+        ht.exportHtml("test.html",htmlTable);
     }
 
 

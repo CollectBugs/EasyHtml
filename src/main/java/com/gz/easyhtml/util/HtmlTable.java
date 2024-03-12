@@ -14,7 +14,7 @@ public class HtmlTable {
      * @param fileName
      * @param htmlTable
      */
-    public static void exportHtml(String fileName, String htmlTable) {
+    public void exportHtml(String fileName, String htmlTable) {
         //输出html文件
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileName))) {
             bufferedWriter.write(htmlTable);
@@ -31,12 +31,12 @@ public class HtmlTable {
      * @param tableStyleConfig
      * @return
      */
-    public static String convertHtmlLabel(List<String> headers, List<List<String>> data, TableStyleConfig tableStyleConfig) {
+    public String convertHtmlLabel(String titleName, List<String> headers, List<List<String>> data, TableStyleConfig tableStyleConfig) {
         StringBuilder html = new StringBuilder();
         //默认表格样式前
         defaultTableStyleBefore(html);
         // 初始化表头
-        initHeaders(headers, html, tableStyleConfig);
+        initHeaders(titleName, headers, html, tableStyleConfig);
         // 初始行
         initBodyRows(data, html, tableStyleConfig);
         //默认表格样式后
@@ -44,11 +44,13 @@ public class HtmlTable {
         return html.toString();
     }
 
-    private static void defaultTableStyleAfter(StringBuilder html) {
+    private void defaultTableStyleAfter(StringBuilder html) {
         html.append("</table>");
     }
 
-    private static void initBodyRows(List<List<String>> data, StringBuilder html, TableStyleConfig tableStyleConfig) {
+    private void initBodyRows(List<List<String>> data, StringBuilder html, TableStyleConfig tableStyleConfig) {
+        TableStyleConfig.Style rowStyle = tableStyleConfig.getRowStyle();
+
         html.append("""
                 <tbody>
                     """);
@@ -60,9 +62,9 @@ public class HtmlTable {
                 html.append("""
                         <td style="border: %s %s %s;">%s</td>
                         """.formatted(
-                        tableStyleConfig.getRowBorderStyle().getLineWith(),
-                        tableStyleConfig.getRowBorderStyle().getLineStyle(),
-                        tableStyleConfig.getRowBorderStyle().getColor(),
+                        rowStyle.getBorderLineWith(),
+                        rowStyle.getBorderLineStyle(),
+                        rowStyle.getBorderColor(),
                         cell
                 ));
             }
@@ -77,31 +79,61 @@ public class HtmlTable {
     }
 
     //默认表格样式
-    private static void defaultTableStyleBefore(StringBuilder html) {
+    private void defaultTableStyleBefore(StringBuilder html) {
         html.append("""
                 <table style="margin: 0 auto; border-collapse: collapse;">
                 """);
     }
 
-    private static void initHeaders(List<String> headers, StringBuilder html, TableStyleConfig tableStyleConfig) {
+    private void initHeaders(String titleName, List<String> columns, StringBuilder html, TableStyleConfig tableStyleConfig) {
+        TableStyleConfig.Style columnStyle = tableStyleConfig.getColumnStyle();
+        TableStyleConfig.Style titleStyle = tableStyleConfig.getTitleStyle();
+
+        initHeaderBefore(html);
+
+        //标题
+        doInitTitle(titleStyle, html, titleName);
+        //列表头
+        doInitColumn(columnStyle, columns, html);
+
+        initHeaderAfter(html);
+
+    }
+
+    private void initHeaderBefore(StringBuilder html) {
         html.append("""
                 <thead>
-                    <tr>
-                        """);
-        for (String header : headers) {
-            html.append("""
-                    <th style="border: %s %s %s;">%s</th>
-                    """.formatted(
-                    tableStyleConfig.getHeadBorderStyle().getLineWith(),
-                    tableStyleConfig.getHeadBorderStyle().getLineStyle(),
-                    tableStyleConfig.getHeadBorderStyle().getColor(),
-                    header
-            ));
-        }
+                """);
+    }
+
+    private void initHeaderAfter(StringBuilder html) {
         html.append("""
-                    </tr>
                 </thead>
                 """);
+    }
 
+    private void doInitColumn(TableStyleConfig.Style columnStyle, List<String> columns, StringBuilder html) {
+        html.append("""
+                <tr>
+                """);
+        columns.forEach(column -> html.append("""
+                <th style="border: %s %s %s;">%s</th>
+                """.formatted(
+                columnStyle.getBorderLineWith(),
+                columnStyle.getBorderLineStyle(),
+                columnStyle.getBorderColor(),
+                column
+        )));
+        html.append("""
+                    </tr>
+                """);
+    }
+
+    private void doInitTitle(TableStyleConfig.Style titleStyle, StringBuilder html, String titleName) {
+        html.append("""
+                <tr>
+                    <th colspan="%d" style="text-align: %s;">%s</th>
+                </tr>
+                """.formatted(titleStyle.getColumnColspanNum(), titleStyle.getTextPosition(), titleName));
     }
 }
