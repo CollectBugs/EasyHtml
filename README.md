@@ -7,7 +7,6 @@
 * 支持自定义列样式
 * 支持自定义行样式
 * 支持自定义文件名
-
 # 测试样例
 ```Java
  @Test
@@ -19,29 +18,34 @@
         );
         //表格配置
          var config = TableStyleConfig.builder()
-                .titleStyle(TableStyleConfig.Style.builder().
-                        borderLineWith(LineWidthEnum.WIDTH_1PX.getWidth()).
-                        borderLineStyle(LineStyleEnum.SOLID.getStyle())
+                .titleStyle(TableStyleConfig.TitleStyle.builder()
+                        .borderLineWith(LineWidthEnum.WIDTH_1PX.getWidth())
+                        .borderLineStyle(LineStyleEnum.SOLID.getStyle())
                         .borderColor(ColorEnum.BLACK.getCode())
                         .columnColspanNum(3)
-                        .textPosition(PositionEnum.CENTER).build())
-                .columnStyle(TableStyleConfig.Style.builder().
-                        borderLineWith(LineWidthEnum.WIDTH_1PX.getWidth()).
-                        borderLineStyle(LineStyleEnum.SOLID.getStyle())
-                        .borderColor(ColorEnum.BLACK.getCode()).build())
-                .rowStyle(TableStyleConfig.Style.builder().
-                        borderLineWith(LineWidthEnum.WIDTH_1PX.getWidth()).
-                        borderLineStyle(LineStyleEnum.SOLID.getStyle())
+                        .textPosition(PositionEnum.CENTER)
+                        .build())
+                .columnStyle(TableStyleConfig.ColumnStyle.builder()
+                        .borderLineWith(LineWidthEnum.WIDTH_1PX.getWidth())
+                        .borderLineStyle(LineStyleEnum.SOLID.getStyle())
+                        .borderColor(ColorEnum.BLACK.getCode())
+                        .backGroundColor(ColorEnum.BLUE.getCode())
+                        .textColor(ColorEnum.WHITE.getCode())
+                        .build())
+                .rowStyle(TableStyleConfig.RowStyle.builder()
+                        .borderLineWith(LineWidthEnum.WIDTH_1PX.getWidth())
+                        .borderLineStyle(LineStyleEnum.SOLID.getStyle())
                         .borderColor(ColorEnum.BLACK.getCode()).build())
                 .build();
+        //构建对象
+        HtmlTable ht = new HtmlTable(config);
         //转成html标签
-        HtmlTable ht=new HtmlTable();
-        String htmlTable = ht.convertHtmlLabel("人员信息表",headers, data, config);
+        String htmlTable = ht.convertHtmlLabel("人员信息表", headers, data);
         //输出html文件
-        ht.exportHtml("test.html",htmlTable);
+        ht.exportHtml("test.html", htmlTable);
 
     }
 ```
 # 项目效果展示
-![image](https://github.com/CollectBugs/EasyHtml/assets/32507511/822c3973-7b5a-47fa-985e-a666d52554ae)
+![image](https://github.com/CollectBugs/EasyHtml/assets/32507511/ad68c789-3549-4bb3-9601-8a7956104961)
 
