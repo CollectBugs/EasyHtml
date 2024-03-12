@@ -11,20 +11,15 @@
                 List.of("jelly", "30", "he ze")
         );
         //表格配置
-        var config = TableStyleConfig.builder()
-                .tableStyle(TableStyleConfig.Table.builder()
-                        .borderCollapse("collapse")
-                        .margin("0 auto")
-                        .textPosition("center")
-                        .build())
+          var config = TableStyleConfig.builder()
                 .headBorderStyle(TableStyleConfig.Border.builder().
-                        lineWith("1px").
-                        lineStyle("solid")
-                        .color("#000000").build())
-                .cellBorderStyle(TableStyleConfig.Border.builder().
-                        lineWith("1px").
-                        lineStyle("solid")
-                        .color("#000000").build())
+                        lineWith(LineWidthEnum.WIDTH_1PX.getWidth()).
+                        lineStyle(LineStyleEnum.SOLID.getStyle())
+                        .color(ColorEnum.BLACK.getCode()).build())
+                .rowBorderStyle(TableStyleConfig.Border.builder().
+                        lineWith(LineWidthEnum.WIDTH_1PX.getWidth()).
+                        lineStyle(LineStyleEnum.SOLID.getStyle())
+                        .color(ColorEnum.BLACK.getCode()).build())
                 .build();
        //转成html标签
         String htmlTable = HtmlTable.convertHtmlLabel(headers, data, config);
