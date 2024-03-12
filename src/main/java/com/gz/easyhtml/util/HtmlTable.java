@@ -10,10 +10,11 @@ import java.util.List;
 public class HtmlTable {
     /**
      * 导出html文件
+     *
      * @param fileName
      * @param htmlTable
      */
-    public static void exportHtml(String fileName,String htmlTable){
+    public static void exportHtml(String fileName, String htmlTable) {
         //输出html文件
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileName))) {
             bufferedWriter.write(htmlTable);
@@ -24,6 +25,7 @@ public class HtmlTable {
 
     /**
      * 转成html标签
+     *
      * @param headers
      * @param data
      * @param tableStyleConfig
@@ -34,9 +36,9 @@ public class HtmlTable {
         //默认表格样式前
         defaultTableStyleBefore(html);
         // 初始化表头
-        initHeaders(headers,html,tableStyleConfig);
+        initHeaders(headers, html, tableStyleConfig);
         // 初始行
-        initBodyRows(data,html,tableStyleConfig);
+        initBodyRows(data, html, tableStyleConfig);
         //默认表格样式后
         defaultTableStyleAfter(html);
         return html.toString();
@@ -47,34 +49,59 @@ public class HtmlTable {
     }
 
     private static void initBodyRows(List<List<String>> data, StringBuilder html, TableStyleConfig tableStyleConfig) {
-        html.append("<tbody>");
+        html.append("""
+                <tbody>
+                    """);
         for (List<String> row : data) {
-            html.append("<tr>");
+            html.append("""
+                    <tr>
+                        """);
             for (String cell : row) {
-                html.append("<td style=\"border: ").append(tableStyleConfig.getRowBorderStyle().getLineWith())
-                        .append(" ").append(tableStyleConfig.getRowBorderStyle().getLineStyle())
-                        .append(" ").append(tableStyleConfig.getRowBorderStyle().getColor()).append(";\">")
-                        .append(cell).append("</td>");
+                html.append("""
+                        <td style="border: %s %s %s;">%s</td>
+                        """.formatted(
+                        tableStyleConfig.getRowBorderStyle().getLineWith(),
+                        tableStyleConfig.getRowBorderStyle().getLineStyle(),
+                        tableStyleConfig.getRowBorderStyle().getColor(),
+                        cell
+                ));
             }
-            html.append("</tr>");
+            html.append("""
+                    </tr>
+                    """);
         }
-        html.append("</tbody>");
+        html.append("""
+                </tbody>
+                """);
+
     }
 
     //默认表格样式
     private static void defaultTableStyleBefore(StringBuilder html) {
         html.append("""
-        <table style="margin: 0 auto; border-collapse: collapse;">
-        """);
+                <table style="margin: 0 auto; border-collapse: collapse;">
+                """);
     }
-    private static void initHeaders(List<String> headers,StringBuilder html,TableStyleConfig tableStyleConfig) {
-        html.append("<thead><tr>");
+
+    private static void initHeaders(List<String> headers, StringBuilder html, TableStyleConfig tableStyleConfig) {
+        html.append("""
+                <thead>
+                    <tr>
+                        """);
         for (String header : headers) {
-            html.append("<th style=\"border: ").append(tableStyleConfig.getHeadBorderStyle().getLineWith())
-                    .append(" ").append(tableStyleConfig.getHeadBorderStyle().getLineStyle())
-                    .append(" ").append(tableStyleConfig.getHeadBorderStyle().getColor()).append(";\">")
-                    .append(header).append("</th>");
+            html.append("""
+                    <th style="border: %s %s %s;">%s</th>
+                    """.formatted(
+                    tableStyleConfig.getHeadBorderStyle().getLineWith(),
+                    tableStyleConfig.getHeadBorderStyle().getLineStyle(),
+                    tableStyleConfig.getHeadBorderStyle().getColor(),
+                    header
+            ));
         }
-        html.append("</tr></thead>");
+        html.append("""
+                    </tr>
+                </thead>
+                """);
+
     }
 }
