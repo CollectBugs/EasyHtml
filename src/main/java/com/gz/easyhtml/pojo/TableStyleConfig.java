@@ -12,9 +12,7 @@ public class TableStyleConfig {
     //头样式
     private Border headBorderStyle;
     //单元格样式
-    private Border cellBorderStyle;
-    //表格样式
-    private Table tableStyle;
+    private Border rowBorderStyle;
 
     /**
      * 边框
@@ -29,19 +27,5 @@ public class TableStyleConfig {
         //边框形状：solid
         private String lineStyle;
 
-    }
-
-    /**
-     * 表格
-     */
-    @Data
-    @Builder
-    public static class Table {
-        //文本位置
-        private String textPosition;
-        //表格位置
-        private String margin;
-        //合并相邻单元格边框
-        private String borderCollapse;
     }
 }

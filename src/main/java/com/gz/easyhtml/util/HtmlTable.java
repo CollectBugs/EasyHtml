@@ -31,12 +31,43 @@ public class HtmlTable {
      */
     public static String convertHtmlLabel(List<String> headers, List<List<String>> data, TableStyleConfig tableStyleConfig) {
         StringBuilder html = new StringBuilder();
-        html.append("<table style=\"text-align: ").append(tableStyleConfig.getTableStyle().getTextPosition())
-                .append("; margin: ").append(tableStyleConfig.getTableStyle().getMargin())
-                .append("; border-collapse: ").append(tableStyleConfig.getTableStyle().getBorderCollapse())
-                .append(";\">");
+        //默认表格样式前
+        defaultTableStyleBefore(html);
+        // 初始化表头
+        initHeaders(headers,html,tableStyleConfig);
+        // 初始行
+        initBodyRows(data,html,tableStyleConfig);
+        //默认表格样式后
+        defaultTableStyleAfter(html);
+        return html.toString();
+    }
 
-        // table headers
+    private static void defaultTableStyleAfter(StringBuilder html) {
+        html.append("</table>");
+    }
+
+    private static void initBodyRows(List<List<String>> data, StringBuilder html, TableStyleConfig tableStyleConfig) {
+        html.append("<tbody>");
+        for (List<String> row : data) {
+            html.append("<tr>");
+            for (String cell : row) {
+                html.append("<td style=\"border: ").append(tableStyleConfig.getRowBorderStyle().getLineWith())
+                        .append(" ").append(tableStyleConfig.getRowBorderStyle().getLineStyle())
+                        .append(" ").append(tableStyleConfig.getRowBorderStyle().getColor()).append(";\">")
+                        .append(cell).append("</td>");
+            }
+            html.append("</tr>");
+        }
+        html.append("</tbody>");
+    }
+
+    //默认表格样式
+    private static void defaultTableStyleBefore(StringBuilder html) {
+        html.append("""
+        <table style="margin: 0 auto; border-collapse: collapse;">
+        """);
+    }
+    private static void initHeaders(List<String> headers,StringBuilder html,TableStyleConfig tableStyleConfig) {
         html.append("<thead><tr>");
         for (String header : headers) {
             html.append("<th style=\"border: ").append(tableStyleConfig.getHeadBorderStyle().getLineWith())
@@ -45,22 +76,5 @@ public class HtmlTable {
                     .append(header).append("</th>");
         }
         html.append("</tr></thead>");
-
-        // table body
-        html.append("<tbody>");
-        for (List<String> row : data) {
-            html.append("<tr>");
-            for (String cell : row) {
-                html.append("<td style=\"border: ").append(tableStyleConfig.getCellBorderStyle().getLineWith())
-                        .append(" ").append(tableStyleConfig.getCellBorderStyle().getLineStyle())
-                        .append(" ").append(tableStyleConfig.getCellBorderStyle().getColor()).append(";\">")
-                        .append(cell).append("</td>");
-            }
-            html.append("</tr>");
-        }
-        html.append("</tbody>");
-        html.append("</table>");
-
-        return html.toString();
     }
 }
