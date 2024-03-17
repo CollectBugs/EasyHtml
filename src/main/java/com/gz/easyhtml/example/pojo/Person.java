@@ -1,4 +1,4 @@
-package com.gz.easyhtml.pojo;
+package com.gz.easyhtml.example.pojo;
 
 import lombok.Data;
 

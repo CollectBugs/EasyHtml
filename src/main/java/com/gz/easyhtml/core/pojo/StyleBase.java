@@ -1,4 +1,4 @@
-package com.gz.easyhtml.pojo;
+package com.gz.easyhtml.core.pojo;
 
 import lombok.Data;
 import lombok.experimental.SuperBuilder;

@@ -1,4 +1,4 @@
-package com.gz.easyhtml.enums;
+package com.gz.easyhtml.core.enums;
 
 import lombok.Getter;
 

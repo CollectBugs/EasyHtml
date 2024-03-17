@@ -1,9 +1,6 @@
-package com.gz.easyhtml.pojo;
+package com.gz.easyhtml.core.pojo;
 
-import com.gz.easyhtml.enums.ColorEnum;
-import com.gz.easyhtml.enums.LineStyleEnum;
-import com.gz.easyhtml.enums.LineWidthEnum;
-import com.gz.easyhtml.enums.PositionEnum;
+import com.gz.easyhtml.core.enums.PositionEnum;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;

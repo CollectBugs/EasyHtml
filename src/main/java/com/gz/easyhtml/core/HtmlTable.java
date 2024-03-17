@@ -1,14 +1,14 @@
-package com.gz.easyhtml.util;
+package com.gz.easyhtml.core;
 
-import com.gz.easyhtml.enums.*;
-import com.gz.easyhtml.pojo.TableStyleConfig;
+import com.gz.easyhtml.core.enums.*;
+import com.gz.easyhtml.core.pojo.TableStyleConfig;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class HtmlTable {
@@ -40,13 +40,10 @@ public class HtmlTable {
     private Integer columnColspanNum;
     //标题文本位置
     private PositionEnum textPosition;
+    //html内容
+    private static StringBuilder html = new StringBuilder();
 
-    public HtmlTable() {
-        this(TableStyleConfig.builder().build());
-    }
-
-
-    public HtmlTable(TableStyleConfig config) {
+    HtmlTable(TableStyleConfig config) {
         //标题
         var titleStyle = config.getTitleStyle();
         setTitleStyle(titleStyle);
@@ -59,51 +56,55 @@ public class HtmlTable {
         var columnStyle = config.getColumnStyle();
         setColumnStyle(columnStyle);
 
-
     }
 
 
+    /**
+     * 导出
+     *
+     * @param outputStream
+     * @param titleName
+     * @param headers
+     * @param data
+     * @param <T>
+     */
+    public <T> void write(OutputStream outputStream, String titleName, List<String> headers, List<T> data) {
+        //默认表格样式前
+        defaultTableStyleBefore();
+        // 初始化表头
+        initHeaders(titleName, headers);
+        // 初始行
+        initBodyRows(data);
+        //默认表格样式后
+        defaultTableStyleAfter();
+        //写入html
+        writeHtml(outputStream);
+
+    }
 
     /**
      * 导出html文件
      *
-     * @param fileName
-     * @param htmlTable
+     * @param outputStream
      */
-    public void exportHtml(String fileName, String htmlTable) {
+    public static void writeHtml(OutputStream outputStream) {
         //输出html文件
-        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileName))) {
-            bufferedWriter.write(htmlTable);
+        try {
+            // 将HTML内容写入输出流
+            outputStream.write(html.toString().getBytes(StandardCharsets.UTF_8));
+            // 刷新输出流
+            outputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
-    /**
-     * 转成html标签
-     *
-     * @param headers
-     * @param data
-     * @return
-     */
-    public <T> String convertHtmlLabel(String titleName, List<String> headers, List<T> data) {
-        StringBuilder html = new StringBuilder();
-        //默认表格样式前
-        defaultTableStyleBefore(html);
-        // 初始化表头
-        initHeaders(titleName, headers, html);
-        // 初始行
-        initBodyRows(data, html);
-        //默认表格样式后
-        defaultTableStyleAfter(html);
-        return html.toString();
-    }
-
-    private void defaultTableStyleAfter(StringBuilder html) {
+    private void defaultTableStyleAfter() {
         html.append("</table>");
     }
 
-    private <T> void initBodyRows(List<T> data, StringBuilder html) {
+    private <T> void initBodyRows(List<T> data) {
 
         html.append("""
                 <tbody>
@@ -141,37 +142,36 @@ public class HtmlTable {
 
 
     //默认表格样式
-    private void defaultTableStyleBefore(StringBuilder html) {
+    private void defaultTableStyleBefore() {
         html.append("""
                 <table style="margin: 0 auto; border-collapse: collapse;">
                 """);
     }
 
-    private void initHeaders(String titleName, List<String> columns, StringBuilder html) {
-        initHeaderBefore(html);
-
+    private void initHeaders(String titleName, List<String> columns) {
+        initHeaderBefore();
         //标题
-        doInitTitle(html, titleName);
+        doInitTitle(titleName);
         //列表头
-        doInitColumn(columns, html);
+        doInitColumn(columns);
 
-        initHeaderAfter(html);
+        initHeaderAfter();
 
     }
 
-    private void initHeaderBefore(StringBuilder html) {
+    private void initHeaderBefore() {
         html.append("""
                 <thead>
                 """);
     }
 
-    private void initHeaderAfter(StringBuilder html) {
+    private void initHeaderAfter() {
         html.append("""
                 </thead>
                 """);
     }
 
-    private void doInitColumn(List<String> columns, StringBuilder html) {
+    private void doInitColumn(List<String> columns) {
         html.append("""
                 <tr style="background-color: %s;">
                 """.formatted(backGroundColor));
@@ -189,13 +189,14 @@ public class HtmlTable {
                 """);
     }
 
-    private void doInitTitle(StringBuilder html, String titleName) {
+    private void doInitTitle(String titleName) {
         html.append("""
                 <tr>
                     <th colspan="%d" style="text-align: %s;">%s</th>
                 </tr>
                 """.formatted(columnColspanNum, textPosition, titleName));
     }
+
     private void setColumnStyle(TableStyleConfig.ColumnStyle columnStyle) {
         if (null != columnStyle) {
             String columnBorderColor = columnStyle.getBorderColor();
