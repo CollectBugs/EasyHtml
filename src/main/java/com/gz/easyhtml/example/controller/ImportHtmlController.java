@@ -22,7 +22,7 @@ public class ImportHtmlController {
         //表格样式配置
         var config = TableStyleConfig.builder()
                 .titleStyle(TableStyleConfig.TitleStyle.builder()
-                        .columnColspanNum(4)
+                        .columnColspanNum(column.size)
                         .build()).build();
 
         //设置响应体
