@@ -13,49 +13,15 @@ import java.util.List;
 
 public class HtmlTable {
 
-    //行边框颜色
-    private String rowBorderColor;
-    //行边框线宽度
-    private String rowBorderLineWith;
-    //行边框线形状
-    private String rowBorderLineStyle;
-    //行字体类型
-    private String fontType;
-    //行字体大小
-    private String fontSize;
-
-    //列边框颜色
-    private String columnBorderColor;
-    //列边框线宽度
-    private String columnBorderLineWith;
-    //列边框线形状
-    private String columnBorderLineStyle;
-    //列背景色
-    private String backGroundColor;
-    //列字体颜色
-    private String textColor;
-
-
-    //标题合并单元格
-    private Integer columnColspanNum;
-    //标题文本位置
-    private PositionEnum textPosition;
-    //html内容
-    private static StringBuilder html = new StringBuilder();
+    /**
+     * @description html
+     * @date 2024-4-12 14:51
+     * @param null
+     * @return null
+     **/
+    private static StringBuffer html = new StringBuffer();
 
     HtmlTable(TableStyleConfig config) {
-        //标题
-        var titleStyle = config.getTitleStyle();
-        setTitleStyle(titleStyle);
-
-        //行
-        var rowStyle = config.getRowStyle();
-        setRowStyle(rowStyle);
-
-        //列
-        var columnStyle = config.getColumnStyle();
-        setColumnStyle(columnStyle);
-
     }
 
 
@@ -69,17 +35,67 @@ public class HtmlTable {
      * @param <T>
      */
     public <T> void write(OutputStream outputStream, String titleName, List<String> headers, List<T> data) {
-        //默认表格样式前
-        defaultTableStyleBefore();
-        // 初始化表头
-        initHeaders(titleName, headers);
-        // 初始行
-        initBodyRows(data);
-        //默认表格样式后
-        defaultTableStyleAfter();
+        //默认全局样式前
+        defaultGlobalStyleBefore();
+        //初始化body
+        initBodyHtml(titleName,headers,data);
+        //默认全局样式后
+        defaultGlobalStyleAfter();
         //写入html
         writeHtml(outputStream);
 
+    }
+    /**
+     * @description 初始化body
+     * @date 2024-4-12 14:31
+     * @param titleName
+     * @param headers
+     * @param data
+     **/
+    private <T> void initBodyHtml(String titleName, List<String> headers, List<T> data) {
+        // 初始化body html标签前
+        doBodyHtmlBefore();
+        // 初始化标题
+        doTitleHtml(titleName);
+        // 初始化table html标签前
+        doTableHtmlBefore();
+        // 初始化表头
+        doHeaders(headers);
+        // 初始数据行
+        doBodyRows(data);
+        // 初始化table html标签后
+        doTableHtmlAfter();
+        // 初始化body html标签后
+        doBodyHtmlAfter();
+
+    }
+
+    private void doTableHtmlAfter() {
+        html.append("</table>");
+
+    }
+
+    private void doTableHtmlBefore() {
+        html.append("<table>");
+
+    }
+
+    private void doBodyHtmlAfter() {
+        html.append("</body>");
+
+    }
+
+    private void doBodyHtmlBefore() {
+        html.append("<body>");
+    }
+
+    /**
+     * @description 初始化标题
+     * @date 2024-4-12 14:33
+     * @param titleName
+     **/
+    private void doTitleHtml(String titleName) {
+        html.append("<h2>").append(titleName).append("</h2>");
     }
 
     /**
@@ -100,11 +116,11 @@ public class HtmlTable {
 
     }
 
-    private void defaultTableStyleAfter() {
-        html.append("</table>");
+    private void defaultGlobalStyleAfter() {
+        html.append("</html>");
     }
 
-    private <T> void initBodyRows(List<T> data) {
+    private <T> void doBodyRows(List<T> data) {
 
         html.append("""
                 <tbody>
@@ -120,13 +136,8 @@ public class HtmlTable {
                     field.setAccessible(true);
                     MethodHandle getter = MethodHandles.lookup().unreflectGetter(field);
                     Object value = getter.invoke(row);
-                    html.append("<td style=\"border: %s %s %s; font-size: %s; font-family: %s;\">%s</td>"
-                            .formatted(rowBorderLineWith,
-                                    rowBorderLineStyle,
-                                    rowBorderColor,
-                                    fontSize,
-                                    fontType,
-                                    value.toString()));
+                    html.append("<td >%s</td>"
+                            .formatted(value.toString()));
                 } catch (Throwable e) {
                     e.printStackTrace();
                 }
@@ -142,19 +153,35 @@ public class HtmlTable {
 
 
     //默认表格样式
-    private void defaultTableStyleBefore() {
+    private void defaultGlobalStyleBefore() {
         html.append("""
-                <table style="margin: 0 auto; border-collapse: collapse;">
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Styled HTML Table</title>
+                    <style>
+                        table {
+                            border-collapse: collapse;
+                            width: 100%;
+                        }
+                        th, td {
+                            border: 1px solid #ddd; /* 设置单元格边框为1像素宽且灰色 */
+                            padding: 8px;
+                        }
+                        th {
+                            background-color: #f2f2f2; /* 设置表头背景色 */
+                        }
+                    </style>
+                </head>
                 """);
     }
 
-    private void initHeaders(String titleName, List<String> columns) {
+    private void doHeaders(List<String> headers) {
         initHeaderBefore();
-        //标题
-        doInitTitle(titleName);
         //列表头
-        doInitColumn(columns);
-
+        doInitHeader(headers);
         initHeaderAfter();
 
     }
@@ -171,85 +198,15 @@ public class HtmlTable {
                 """);
     }
 
-    private void doInitColumn(List<String> columns) {
+    private void doInitHeader(List<String> columns) {
         html.append("""
-                <tr style="background-color: %s;">
-                """.formatted(backGroundColor));
+            <tr>
+            """);
         columns.forEach(column -> html.append("""
-                <th style="border: %s %s %s; color: %s;">%s</th>
-                """.formatted(
-                columnBorderLineWith,
-                columnBorderLineStyle,
-                columnBorderColor,
-                textColor,
-                column
-        )));
+            <th>%s</th>
+            """.formatted(column)));
         html.append("""
-                    </tr>
-                """);
-    }
-
-    private void doInitTitle(String titleName) {
-        html.append("""
-                <tr>
-                    <th colspan="%d" style="text-align: %s;">%s</th>
                 </tr>
-                """.formatted(columnColspanNum, textPosition, titleName));
-    }
-
-    private void setColumnStyle(TableStyleConfig.ColumnStyle columnStyle) {
-        if (null != columnStyle) {
-            String columnBorderColor = columnStyle.getBorderColor();
-            this.columnBorderColor = (null != columnBorderColor) ? columnBorderColor : ColorEnum.BLACK.getCode();
-            String columnBorderLineWith = columnStyle.getBorderLineWith();
-            this.columnBorderLineWith = (null != columnBorderLineWith) ? columnBorderLineWith : LineWidthEnum.WIDTH_1PX.getWidth();
-            String columnBorderLineStyle = columnStyle.getBorderLineStyle();
-            this.columnBorderLineStyle = (null != columnBorderLineStyle) ? columnBorderLineStyle : LineStyleEnum.SOLID.getStyle();
-            String backGroundColor = columnStyle.getBackGroundColor();
-            this.backGroundColor = (null != backGroundColor) ? backGroundColor : ColorEnum.BLUE.getCode();
-            String textColor = columnStyle.getTextColor();
-            this.textColor = (null != textColor) ? textColor : ColorEnum.WHITE.getCode();
-        } else {
-            this.columnBorderColor = ColorEnum.BLACK.getCode();
-            this.columnBorderLineWith = LineWidthEnum.WIDTH_1PX.getWidth();
-            this.columnBorderLineStyle = LineStyleEnum.SOLID.getStyle();
-            this.backGroundColor = ColorEnum.BLUE.getCode();
-            this.textColor = ColorEnum.WHITE.getCode();
-        }
-    }
-
-    private void setRowStyle(TableStyleConfig.RowStyle rowStyle) {
-        if (null != rowStyle) {
-            String borderColor = rowStyle.getBorderColor();
-            this.rowBorderColor = (null != borderColor) ? borderColor : ColorEnum.BLACK.getCode();
-            String borderLineWith = rowStyle.getBorderLineWith();
-            this.rowBorderLineWith = (null != borderLineWith) ? borderLineWith : LineWidthEnum.WIDTH_1PX.getWidth();
-            String borderLineStyle = rowStyle.getBorderLineStyle();
-            this.rowBorderLineStyle = (null != borderLineStyle) ? borderLineStyle : LineStyleEnum.SOLID.getStyle();
-            String fontType = rowStyle.getFontType();
-            this.fontType = (null != fontType) ? fontType : FontTypeEnum.ARIAL.getType();
-            String fontSize = rowStyle.getFontSize();
-            this.fontSize = (null != fontSize) ? fontSize : FontSizeEnum.SMALL.getSize();
-        } else {
-            this.rowBorderColor = ColorEnum.BLACK.getCode();
-            this.rowBorderLineWith = LineWidthEnum.WIDTH_1PX.getWidth();
-            this.rowBorderLineStyle = LineStyleEnum.SOLID.getStyle();
-            this.fontType = FontTypeEnum.ARIAL.getType();
-            this.fontSize = FontSizeEnum.SMALL.getSize();
-        }
-
-    }
-
-    private void setTitleStyle(TableStyleConfig.TitleStyle titleStyle) {
-        if (null != titleStyle) {
-            Integer columnColspanNum = titleStyle.getColumnColspanNum();
-            this.columnColspanNum = (null != columnColspanNum) ? columnColspanNum : 0;
-            PositionEnum textPosition = titleStyle.getTextPosition();
-            this.textPosition = (null != textPosition) ? textPosition : PositionEnum.CENTER;
-        } else {
-            this.columnColspanNum = 0;
-            this.textPosition = PositionEnum.CENTER;
-        }
-
+            """);
     }
 }
