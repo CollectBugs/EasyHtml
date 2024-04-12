@@ -17,13 +17,8 @@ import java.util.List;
 public class ImportHtmlController {
     @GetMapping("/import")
     public void importHtml(HttpServletResponse response) throws Exception {
-        //构造列
-        List<String> column = List.of("姓名", "性别", "年龄", "城市");
-        //表格样式配置
-        var config = TableStyleConfig.builder()
-                .titleStyle(TableStyleConfig.TitleStyle.builder()
-                        .columnColspanNum(column.size)
-                        .build()).build();
+       //构造列
+        List<String> column = List.of("姓名", "年龄", "地址", "性别");
 
         //设置响应体
         response.setContentType("text/html");
@@ -33,7 +28,7 @@ public class ImportHtmlController {
 
         //导出html
         HtmlTableFactory
-                .build(config)
+                .build(null)
                 .write(response.getOutputStream(), "人员信息表", column, data());
     }
 
