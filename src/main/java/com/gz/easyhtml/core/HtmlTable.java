@@ -1,7 +1,7 @@
 package com.gz.easyhtml.core;
 
-import com.gz.easyhtml.core.enums.*;
 import com.gz.easyhtml.core.pojo.TableStyleConfig;
+import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -9,21 +9,23 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class HtmlTable {
-
+    /**
+     * @description 合并表头
+     **/
+    private List<List<Integer>> mergerColumnNum;
     /**
      * @description html
-     * @date 2024-4-12 14:51
-     * @param null
-     * @return null
      **/
-    private static StringBuffer html = new StringBuffer();
+    private StringBuffer html = new StringBuffer();
 
     HtmlTable(TableStyleConfig config) {
+        this.mergerColumnNum = config != null ? config.getHeaderStyle().getMergerColumnNum() : Collections.emptyList();
     }
-
 
     /**
      * 导出
@@ -34,25 +36,26 @@ public class HtmlTable {
      * @param data
      * @param <T>
      */
-    public <T> void write(OutputStream outputStream, String titleName, List<String> headers, List<T> data) {
+    public <T> void write(OutputStream outputStream, String titleName, List<List<String>> headers, List<T> data) {
         //默认全局样式前
         defaultGlobalStyleBefore();
         //初始化body
-        initBodyHtml(titleName,headers,data);
+        initBodyHtml(titleName, headers, data);
         //默认全局样式后
         defaultGlobalStyleAfter();
         //写入html
         writeHtml(outputStream);
 
     }
+
     /**
-     * @description 初始化body
-     * @date 2024-4-12 14:31
      * @param titleName
      * @param headers
      * @param data
+     * @description 初始化body
+     * @date 2024-4-12 14:31
      **/
-    private <T> void initBodyHtml(String titleName, List<String> headers, List<T> data) {
+    private <T> void initBodyHtml(String titleName, List<List<String>> headers, List<T> data) {
         // 初始化body html标签前
         doBodyHtmlBefore();
         // 初始化标题
@@ -90,9 +93,9 @@ public class HtmlTable {
     }
 
     /**
+     * @param titleName
      * @description 初始化标题
      * @date 2024-4-12 14:33
-     * @param titleName
      **/
     private void doTitleHtml(String titleName) {
         html.append("<h2>").append(titleName).append("</h2>");
@@ -103,7 +106,7 @@ public class HtmlTable {
      *
      * @param outputStream
      */
-    public static void writeHtml(OutputStream outputStream) {
+    private void writeHtml(OutputStream outputStream) {
         //输出html文件
         try {
             // 将HTML内容写入输出流
@@ -128,8 +131,10 @@ public class HtmlTable {
         for (T row : data) {
             html.append("""
                     <tr>
-                        """);
+                    """);
             // 获取对象的所有属性
+
+
             Field[] fields = row.getClass().getDeclaredFields();
             for (Field field : fields) {
                 try {
@@ -178,7 +183,7 @@ public class HtmlTable {
                 """);
     }
 
-    private void doHeaders(List<String> headers) {
+    private void doHeaders(List<List<String>> headers) {
         initHeaderBefore();
         //列表头
         doInitHeader(headers);
@@ -198,15 +203,44 @@ public class HtmlTable {
                 """);
     }
 
-    private void doInitHeader(List<String> columns) {
-        html.append("""
-            <tr>
-            """);
-        columns.forEach(column -> html.append("""
-            <th>%s</th>
-            """.formatted(column)));
-        html.append("""
-                </tr>
-            """);
+    private void doInitHeader(List<List<String>> columns) {
+        int i = 0;
+
+        for (List<String> column : columns) {
+            html.append("""
+                    <tr>
+                    """);
+
+            if (!CollectionUtils.isEmpty(mergerColumnNum)) {
+                if (mergerColumnNum.size() > i) {
+                    List<Integer> mergerColumns = mergerColumnNum.get(i);
+                    int j = 0;
+                    for (String columnName : column) {
+                        html.append(("""
+                                <th colspan="%d">%s</th>
+                                """.formatted(mergerColumns.get(j), columnName)));
+                        j++;
+                    }
+                } else {
+                    setHeadHtml(column);
+                }
+            } else {
+                setHeadHtml(column);
+            }
+
+            html.append("""
+                    </tr>
+                    """);
+            i++;
+        }
+
+    }
+
+    public void setHeadHtml(List<String> column) {
+        column.forEach(columnName -> {
+            html.append("""
+                    <th>%s</th>
+                    """.formatted(columnName));
+        });
     }
 }
