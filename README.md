@@ -19,6 +19,9 @@
 # 测试样例
 https://github.com/CollectBugs/EasyHtml/tree/master/src/main/java/com/gz/easyhtml/example
 # 项目效果展示
-![image](https://github.com/CollectBugs/EasyHtml/assets/32507511/20a29072-8fb2-4ce2-a43e-1d62b004c661)
+![image](https://github.com/CollectBugs/EasyHtml/assets/32507511/c8a93554-bebe-4568-ab1c-1baf2e0320aa)
+![image](https://github.com/CollectBugs/EasyHtml/assets/32507511/e11d3ac0-0bef-4bc4-8709-fd0cf523193f)
+
+
 # 开源分享不易，支持一下
 ![1fd6430f1179bfcd6e8db60044bd1c0](https://github.com/CollectBugs/EasyHtml/assets/32507511/86e04f8b-0400-49bc-9ea9-10a7839c5f7b)
