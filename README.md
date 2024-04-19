@@ -7,7 +7,15 @@
 * 支持自定义文件名
 * 支持自定义二级表头
 * 支持自定义单元格合并二级表头
-
+# 快速开始
+* maven
+```java
+<dependency>
+    <groupId>io.github.collectbugs</groupId>
+    <artifactId>easyhtml</artifactId>
+    <version>1.0.2</version>
+</dependency>
+```
 # 测试样例
 https://github.com/CollectBugs/EasyHtml/tree/master/src/main/java/com/gz/easyhtml/example
 # 项目效果展示
